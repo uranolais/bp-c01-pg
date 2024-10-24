@@ -90,6 +90,7 @@ def adicionarhistoricocompras(usuario_id: int, compras: HistoricoCompras):
         raise HTTPException(status_code=404, detail="Histórico de compras não encontrado")
     HistoricoDeCompras[usuario_id] = compras.produtos_ids
     return {"mensagem": "Histórico de compras atualizado"}
+    # return HistoricoCompras[usuario_id]
 
 # Rota para recomendações de produtos
 
