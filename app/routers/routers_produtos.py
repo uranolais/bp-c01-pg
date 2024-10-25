@@ -63,9 +63,7 @@ def adicionar_historico_compras(
     """
     if usuario_id not in [usuario.id for usuario in usuarios]:
         print("Usuário não encontrado!")
-        raise HTTPException(
-            status_code=404, detail="Histórico de compras não encontrado"
-        )
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
     historico_de_compras[usuario_id] = compras.produtos_ids
     return {"mensagem": "Histórico de compras atualizado"}
 
@@ -85,31 +83,37 @@ def recomendar_produtos(usuario_id: int, preferencias: Preferencias) -> List[Pro
     Returns:
         List[Produto]: Uma lista de produtos recomendados com base no histórico de compras e preferências.
     """
-    if usuario_id not in historico_de_compras:
-        print("Histórico de compras não encontrado")
-        raise HTTPException(
-            status_code=404, detail="Histórico de compras não encontrado"
-        )
+    try:
+        if usuario_id not in historico_de_compras:
+            print("Histórico de compras não encontrado")
+            raise HTTPException(
+                status_code=404, detail="Histórico de compras não encontrado"
+            )
 
-    produtos_recomendados: List[Produto] = []
+        produtos_recomendados: List[Produto] = []
 
-    # Buscar produtos com base no histórico de compras do usuário
+        # Buscar produtos com base no histórico de compras do usuário
 
-    produtos_recomendados = [
-        produto
-        for produto_id in historico_de_compras[usuario_id]
-        for produto in produtos
-        if produto.id == produto_id
-    ]
+        produtos_recomendados = [
+            produto
+            for produto_id in historico_de_compras[usuario_id]
+            for produto in produtos
+            if produto.id == produto_id
+        ]
 
-    # Filtrar as recomendações com base nas preferências
-    produtos_recomendados = [
-        p for p in produtos_recomendados if p.categoria in preferencias.categorias
-    ]  # Preferencias de categorias
-    produtos_recomendados = [
-        p
-        for p in produtos_recomendados
-        if any(tag in preferencias.tags for tag in p.tags)
-    ]  # Preferencias de tags
+        # Filtrar as recomendações com base nas preferências
+        produtos_recomendados = [
+            p for p in produtos_recomendados if p.categoria in preferencias.categorias
+        ]  # Preferencias de categorias
+        produtos_recomendados = [
+            p
+            for p in produtos_recomendados
+            if any(tag in preferencias.tags for tag in p.tags)
+        ]  # Preferencias de tags
 
-    return produtos_recomendados
+        return produtos_recomendados
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Erro inesperado")
