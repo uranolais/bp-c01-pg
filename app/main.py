@@ -10,22 +10,18 @@ app.include_router(routers_produtos.router)
 app.include_router(routers_usuarios.router)
 
 
+MENSAGEM_HOME: str = "Bem-vindo à API de Recomendação de Produtos"
 
-
-
-
-MENSAGEM_HOME: str    ="Bem-vindo à API de Recomendação de Produtos"
-
-
-
-
-
-# Iniciando o servidor
 
 @app.get("/")
-def home() -> Dict[str,str]:
+def home() -> Dict[str, str]:
+    """
+    Rota principal da API.
+
+    Retorna uma mensagem de boas-vindas.
+
+    Returns:
+        dict: Um dicionário contendo a mensagem de boas-vindas.
+    """
     global MENSAGEM_HOME
     return {"mensagem": MENSAGEM_HOME}
-
-
-
